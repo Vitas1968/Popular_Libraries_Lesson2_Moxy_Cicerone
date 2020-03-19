@@ -24,9 +24,7 @@ class App : Application() {
     }
 
 
-    fun bus(): RxBus? {
-        return bus
-    }
+    fun bus(): RxBus? = bus
     fun getNavigatorHolder() = cicerone.navigatorHolder
     fun getRouter() = cicerone.router
 }
