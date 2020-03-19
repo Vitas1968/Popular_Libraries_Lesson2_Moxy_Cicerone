@@ -1,18 +1,19 @@
 package ru.geekbrains.poplib.mvp.presenter
 
+import io.reactivex.rxjava3.core.Scheduler
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.geekbrains.poplib.mvp.model.entity.GithubRepository
 import ru.geekbrains.poplib.mvp.model.repo.GithubRepositoriesRepo
 import ru.geekbrains.poplib.mvp.presenter.list.IRepositoryListPresenter
-import ru.geekbrains.poplib.mvp.view.MainView
 import ru.geekbrains.poplib.mvp.view.RepositoriesView
 import ru.geekbrains.poplib.mvp.view.list.RepositoryItemView
 import ru.geekbrains.poplib.navigation.Screens
 import ru.terrakok.cicerone.Router
+import timber.log.Timber
 
 @InjectViewState
-class RepositoriesPresenter(val repositoriesRepo: GithubRepositoriesRepo, val router: Router) : MvpPresenter<RepositoriesView>() {
+class RepositoriesPresenter(val ANDROID_MAIN_THREAD: Scheduler, val repositoriesRepo: GithubRepositoriesRepo, val router: Router) : MvpPresenter<RepositoriesView>() {
 
     class RepositoryListPresenter : IRepositoryListPresenter {
         val repositories = mutableListOf<GithubRepository>()
@@ -35,18 +36,20 @@ class RepositoriesPresenter(val repositoriesRepo: GithubRepositoriesRepo, val ro
 
         repositoryListPresenter.itemClickListener = { itemView ->
             val repository = repositoryListPresenter.repositories[itemView.pos]
-
-            //Практическое задание
             router.navigateTo(Screens.RepositoryScreen(repository))
         }
     }
 
-   private fun loadRepos() {
-        repositoriesRepo.getRepos().let { repos ->
-            repositoryListPresenter.repositories.clear()
-            repositoryListPresenter.repositories.addAll(repos)
-            viewState.updateList()
-        }
+
+    private fun loadRepos() {
+        repositoriesRepo.getObsrvableRepos()
+            .observeOn(ANDROID_MAIN_THREAD)
+            .subscribe({listRepository ->
+                repositoryListPresenter.repositories.clear()
+                repositoryListPresenter.repositories.addAll(listRepository)
+                viewState.updateList()
+            },{
+                Timber.e(it) })
     }
 
     fun backClicked() : Boolean {
