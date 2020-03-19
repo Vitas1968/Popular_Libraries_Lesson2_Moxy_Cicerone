@@ -1,6 +1,9 @@
 package ru.geekbrains.poplib.mvp.model.repo
 
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import ru.geekbrains.poplib.mvp.model.entity.GithubRepository
+import ru.geekbrains.poplib.ui.App
 
 class GithubRepositoriesRepo {
 
@@ -12,17 +15,11 @@ class GithubRepositoriesRepo {
     )
 
     fun getRepos() = repositories
+    fun getObsrvableRepos() = Observable.fromIterable(repositories).toList().subscribeOn(Schedulers.io())
 
-    /*
-    Метод fromIterable возьмет список и создаст из него Observable с отдельными элементами
-     списка, т.е. из List<User> мы получим Observable<User>.Оператор flatMap раскроет
-     получившийся Observable<User> и запостит его элементы далее в поток .В итоге, в
-      метод saveUser будут приходить отдельные объекты User
+    fun getBusRepos() {
+        App.instance.bus()!!
+            .send(repositories)
+    }
 
-    Observable<List<User>> getUsers();
-
-    getUsers()
-    .flatMap(users -> Observable.fromIterable(users))
-    .subscribe(user -> saveUser(user));
-     */
 }
