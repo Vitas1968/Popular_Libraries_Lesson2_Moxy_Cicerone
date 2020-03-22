@@ -20,12 +20,25 @@ import ru.geekbrains.poplib.ui.App
 import ru.geekbrains.poplib.ui.BackButtonListener
 
 
-class RepositoryFragment(val repository : GithubRepository?) : MvpAppCompatFragment(),RepositoryView,
+class RepositoryFragment : MvpAppCompatFragment(),RepositoryView,
     BackButtonListener {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        repository=arguments?.getParcelable("repository")
+        super.onCreate(savedInstanceState)
 
+    }
+
+    var repository : GithubRepository?=null
     companion object {
-        fun newInstance(repository : GithubRepository?) = RepositoryFragment(repository)
+        fun newInstance(repository : GithubRepository?): RepositoryFragment{
+            val args= Bundle()
+            args.putParcelable("repository",repository)
+            val repositoryFragment= RepositoryFragment()
+             repositoryFragment.arguments=args
+            return repositoryFragment
+
+        }
     }
     @InjectPresenter
     lateinit var presenter: RepositoryPresenter
@@ -34,14 +47,15 @@ class RepositoryFragment(val repository : GithubRepository?) : MvpAppCompatFragm
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_repository, container, false)
     }
     @ProvidePresenter
     fun providePresenterRepository() =
         RepositoryPresenter(GithubRepository(repository!!.id,
-        repository.name,
-        repository.forksCount), App.instance.getRouter())
+        repository!!.name,
+        repository!!.forksCount), App.instance.getRouter())
 
 
     override fun renderData(id: String, name: String, forksCount: Int) {
