@@ -2,37 +2,22 @@ package ru.geekbrains.poplib.mvp.model.entity
 
 import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
 //https://api.github.com/users/googlesamples/repos
+@Parcelize
 data class GithubRepository(
     val id: String,
     val name: String,
     val forksCount: Int
 ): Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString().toString(),
-        parcel.readString().toString(),
-        parcel.readInt()
-    ) {
-    }
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(id)
-        parcel.writeString(name)
-        parcel.writeInt(forksCount)
-    }
+        other as GithubRepository
 
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<GithubRepository> {
-        override fun createFromParcel(parcel: Parcel): GithubRepository {
-            return GithubRepository(parcel)
-        }
-
-        override fun newArray(size: Int): Array<GithubRepository?> {
-            return arrayOfNulls(size)
-        }
+        if (id != other.id) return false
+        return true
     }
 }
