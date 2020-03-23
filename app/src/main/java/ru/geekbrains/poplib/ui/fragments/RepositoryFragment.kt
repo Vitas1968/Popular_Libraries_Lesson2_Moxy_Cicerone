@@ -23,12 +23,6 @@ import ru.geekbrains.poplib.ui.BackButtonListener
 class RepositoryFragment : MvpAppCompatFragment(),RepositoryView,
     BackButtonListener {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        repository=arguments?.getParcelable("repository")
-        super.onCreate(savedInstanceState)
-
-    }
-
     var repository : GithubRepository?=null
     companion object {
         fun newInstance(repository : GithubRepository?): RepositoryFragment{
@@ -52,19 +46,28 @@ class RepositoryFragment : MvpAppCompatFragment(),RepositoryView,
         return inflater.inflate(R.layout.fragment_repository, container, false)
     }
     @ProvidePresenter
-    fun providePresenterRepository() =
-        RepositoryPresenter(GithubRepository(repository!!.id,
-        repository!!.name,
-        repository!!.forksCount), App.instance.getRouter())
-
-
-    override fun renderData(id: String, name: String, forksCount: Int) {
+    fun providePresenterRepository() :RepositoryPresenter {
+        repository=arguments?.getParcelable("repository")
+        return RepositoryPresenter(
+            GithubRepository(
+                repository!!.id,
+                repository!!.name,
+                repository!!.forksCount
+            ), App.instance.getRouter()
+        )
+    }
+    override fun backClicked() = presenter.backClicked()
+    override fun renderId(id: String) {
         tV_id.text=id
-        tV_name.text=name
-        tV_forksCount.text=forksCount.toString()
     }
 
-    override fun backClicked() = presenter.backClicked()
+    override fun renderName(name: String) {
+        tV_name.text=name
+    }
+
+    override fun renderForksCount(forksCount: String) {
+        tV_forksCount.text=forksCount.toString()
+    }
 
 
 }
