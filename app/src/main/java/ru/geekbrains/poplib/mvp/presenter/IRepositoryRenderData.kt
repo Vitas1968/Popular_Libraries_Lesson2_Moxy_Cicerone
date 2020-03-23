@@ -1,5 +1,8 @@
 package ru.geekbrains.poplib.mvp.presenter
 
 interface IRepositoryRenderData {
-    fun renderData()
+
+    fun renderName()
+    fun renderForksCount()
+    fun renderId()
 }
