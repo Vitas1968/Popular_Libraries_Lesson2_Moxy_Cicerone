@@ -72,7 +72,7 @@ class RepositoriesPresenter(val ANDROID_MAIN_THREAD: Scheduler, val repositories
     }
 
      */
-
+    
     fun backClicked() : Boolean {
         router.exit()
         return true
