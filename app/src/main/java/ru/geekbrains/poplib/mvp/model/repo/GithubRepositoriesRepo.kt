@@ -12,4 +12,17 @@ class GithubRepositoriesRepo {
     )
 
     fun getRepos() = repositories
+
+    /*
+    Метод fromIterable возьмет список и создаст из него Observable с отдельными элементами
+     списка, т.е. из List<User> мы получим Observable<User>.Оператор flatMap раскроет
+     получившийся Observable<User> и запостит его элементы далее в поток .В итоге, в
+      метод saveUser будут приходить отдельные объекты User
+
+    Observable<List<User>> getUsers();
+
+    getUsers()
+    .flatMap(users -> Observable.fromIterable(users))
+    .subscribe(user -> saveUser(user));
+     */
 }
