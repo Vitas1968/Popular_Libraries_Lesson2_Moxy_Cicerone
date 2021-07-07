@@ -20,12 +20,19 @@ import ru.geekbrains.poplib.ui.App
 import ru.geekbrains.poplib.ui.BackButtonListener
 
 
-class RepositoryFragment(val repository : GithubRepository?) : MvpAppCompatFragment(),RepositoryView,
+class RepositoryFragment : MvpAppCompatFragment(),RepositoryView,
     BackButtonListener {
 
-
+    var repository : GithubRepository?=null
     companion object {
-        fun newInstance(repository : GithubRepository?) = RepositoryFragment(repository)
+        fun newInstance(repository : GithubRepository?): RepositoryFragment{
+            val args= Bundle()
+            args.putParcelable("repository",repository)
+            val repositoryFragment= RepositoryFragment()
+             repositoryFragment.arguments=args
+            return repositoryFragment
+
+        }
     }
     @InjectPresenter
     lateinit var presenter: RepositoryPresenter
@@ -34,23 +41,33 @@ class RepositoryFragment(val repository : GithubRepository?) : MvpAppCompatFragm
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_repository, container, false)
     }
     @ProvidePresenter
-    fun providePresenterRepository() =
-        RepositoryPresenter(GithubRepository(repository!!.id,
-        repository.name,
-        repository.forksCount), App.instance.getRouter())
-
-
-    override fun renderData(id: String, name: String, forksCount: Int) {
+    fun providePresenterRepository() :RepositoryPresenter {
+        repository=arguments?.getParcelable("repository")
+        return RepositoryPresenter(
+            GithubRepository(
+                repository!!.id,
+                repository!!.name,
+                repository!!.forksCount
+            ), App.instance.getRouter()
+        )
+    }
+    override fun backClicked() = presenter.backClicked()
+    override fun renderId(id: String) {
         tV_id.text=id
-        tV_name.text=name
-        tV_forksCount.text=forksCount.toString()
     }
 
-    override fun backClicked() = presenter.backClicked()
+    override fun renderName(name: String) {
+        tV_name.text=name
+    }
+
+    override fun renderForksCount(forksCount: String) {
+        tV_forksCount.text=forksCount.toString()
+    }
 
 
 }
